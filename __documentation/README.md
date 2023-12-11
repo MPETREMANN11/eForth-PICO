@@ -1,1 +1,1 @@
-
+<img src="couverture.jpg"/>
