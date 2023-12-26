@@ -20,8 +20,6 @@ SIO_BASE $014 + constant GPIO_OUT_SET
 SIO_BASE $018 + constant GPIO_OUT_CLR 
 SIO_BASE $01c + constant GPIO_OUT_XOR
 
-07 constant MY_RELAY   \ Red Relay on GPIO 7
-
 \ transform GPIO number in his binary mask
 : PIN_MASK ( n -- mask )
     1 swap lshift
@@ -66,6 +64,8 @@ $40014000 constant IO_BANK0_BASE
     swap GPIO_CTRL !
   ;
 
+07 constant MY_RELAY   \ Reed Relay on GPIO 7
+
 : relay_init ( -- )
     MY_RELAY GPIO_FUNC_SIO gpio_set_function
     MY_RELAY GPIO_OUT gpio_set_dir
@@ -84,6 +84,31 @@ $40014000 constant IO_BANK0_BASE
   ;
 
 
+/ *** case of bistable relay ***************************************************
+
+07 constant MY_RELAY_ON   \ Reed Relay on GPIO 7
+08 constant MY_RELAY_OFF  \ Reed Relay on GPIO 8
+
+: relays_init ( -- )
+    MY_RELAY_ON   GPIO_FUNC_SIO gpio_set_function
+    MY_RELAY_ON   GPIO_OUT gpio_set_dir
+    MY_RELAY_OFF  GPIO_FUNC_SIO gpio_set_function
+    MY_RELAY_OFF  GPIO_OUT gpio_set_dir
+  ;
+
+500 value ACTION_DELAY
+
+: bistable_on ( -- )
+    MY_RELAY_ON  GPIO_HIGH gpio_put
+    ACTION_DELAY ms
+    MY_RELAY_ON  GPIO_LOW  gpio_put
+  ;
+
+: bistable_off ( -- )
+    MY_RELAY_OFF GPIO_HIGH gpio_put
+    ACTION_DELAY ms
+    MY_RELAY_OFF GPIO_LOW  gpio_put
+  ;
 
 
 
